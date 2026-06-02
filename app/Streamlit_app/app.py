@@ -33,32 +33,38 @@ show_probability = st.sidebar.checkbox(
 )
 
 
-col1, col2, col3 = st.columns(3)
+# =========================
+# CUSTOMER PROFILE
+# =========================
 
+with st.expander(
+    "👤 Customer Profile",
+    expanded=True
+):
 
-with col1:
+    col1, col2 = st.columns(2)
 
-    st.subheader("👤 Customer Demographics")
+    with col1:
+        gender = st.selectbox(
+            "Gender",
+            ["Male", "Female"]
+        )
 
-    gender = st.selectbox(
-        "Gender",
-        ["Male", "Female"]
-    )
+        partner = st.selectbox(
+            "Partner",
+            ["Yes", "No"]
+        )
 
-    senior = st.selectbox(
-        "Senior Citizen",
-        [0, 1]
-    )
+    with col2:
+        senior = st.selectbox(
+            "Senior Citizen",
+            [0, 1]
+        )
 
-    partner = st.selectbox(
-        "Partner",
-        ["Yes", "No"]
-    )
-
-    dependents = st.selectbox(
-        "Dependents",
-        ["Yes", "No"]
-    )
+        dependents = st.selectbox(
+            "Dependents",
+            ["Yes", "No"]
+        )
 
     tenure = st.slider(
         "Customer Tenure (Months)",
@@ -68,79 +74,165 @@ with col1:
     )
 
 
-with col2:
+# =========================
+# TELECOM SERVICES
+# =========================
 
-    st.subheader("📞 Telecom Services")
+with st.expander(
+    "📞 Telecom Services",
+    expanded=False
+):
 
-    phone_service = st.selectbox(
-        "Phone Service",
-        ["Yes", "No"]
-    )
+    col1, col2 = st.columns(2)
 
-    multiple_lines = st.selectbox(
-        "Multiple Lines",
-        ["Yes", "No", "No phone service"]
-    )
+    with col1:
 
-    internet_service = st.selectbox(
-        "Internet Service",
-        ["DSL", "Fiber optic", "No"]
-    )
+        phone_service = st.selectbox(
+            "Phone Service",
+            ["Yes", "No"]
+        )
 
-    online_security = st.selectbox(
-        "Online Security",
-        ["Yes", "No", "No internet service"]
-    )
+        internet_service = st.selectbox(
+            "Internet Service",
+            ["DSL", "Fiber optic", "No"]
+        )
 
-    online_backup = st.selectbox(
-        "Online Backup",
-        ["Yes", "No", "No internet service"]
-    )
+        if internet_service == "No":
 
-    device_protection = st.selectbox(
-        "Device Protection",
-        ["Yes", "No", "No internet service"]
-    )
+            online_security = "No internet service"
+
+            st.selectbox(
+                "Online Security",
+                ["No internet service"],
+                disabled=True
+            )
+
+        else:
+
+            online_security = st.selectbox(
+                "Online Security",
+                ["Yes", "No"]
+            )
+
+    with col2:
+
+        multiple_lines = st.selectbox(
+            "Multiple Lines",
+            ["Yes", "No", "No phone service"]
+        )
+
+        if internet_service == "No":
+
+            online_backup = "No internet service"
+
+            st.selectbox(
+                "Online Backup",
+                ["No internet service"],
+                disabled=True
+            )
+
+        else:
+
+            online_backup = st.selectbox(
+                "Online Backup",
+                ["Yes", "No"]
+            )
+
+    if internet_service == "No":
+
+        device_protection = "No internet service"
+
+        st.selectbox(
+            "Device Protection",
+            ["No internet service"],
+            disabled=True
+        )
+
+    else:
+
+        device_protection = st.selectbox(
+            "Device Protection",
+            ["Yes", "No"]
+        )
 
 
-with col3:
+# =========================
+# BILLING & SUPPORT
+# =========================
 
-    st.subheader("💳 Billing & Support")
+with st.expander(
+    "💳 Billing & Support",
+    expanded=False
+):
 
-    tech_support = st.selectbox(
-        "Tech Support",
-        ["Yes", "No", "No internet service"]
-    )
+    col1, col2 = st.columns(2)
 
-    streaming_tv = st.selectbox(
-        "Streaming TV",
-        ["Yes", "No", "No internet service"]
-    )
+    with col1:
 
-    streaming_movies = st.selectbox(
-        "Streaming Movies",
-        ["Yes", "No", "No internet service"]
-    )
+        if internet_service == "No":
 
-    contract = st.selectbox(
-        "Contract Type",
-        ["Month-to-month", "One year", "Two year"]
-    )
+            tech_support = "No internet service"
 
-    paperless = st.selectbox(
-        "Paperless Billing",
-        ["Yes", "No"]
-    )
+            st.selectbox(
+                "Tech Support",
+                ["No internet service"],
+                disabled=True
+            )
 
-    payment = st.selectbox(
-        "Payment Method",
-        [
-            "Electronic check",
-            "Mailed check",
-            "Bank transfer (automatic)",
-            "Credit card (automatic)"
-        ]
-    )
+        else:
+
+            tech_support = st.selectbox(
+                "Tech Support",
+                ["Yes", "No"]
+            )
+
+        streaming_movies = (
+            "No internet service"
+            if internet_service == "No"
+            else st.selectbox(
+                "Streaming Movies",
+                ["Yes", "No"]
+            )
+        )
+
+        paperless = st.selectbox(
+            "Paperless Billing",
+            ["Yes", "No"]
+        )
+
+    with col2:
+
+        if internet_service == "No":
+
+            streaming_tv = "No internet service"
+
+            st.selectbox(
+                "Streaming TV",
+                ["No internet service"],
+                disabled=True
+            )
+
+        else:
+
+            streaming_tv = st.selectbox(
+                "Streaming TV",
+                ["Yes", "No"]
+            )
+
+        contract = st.selectbox(
+            "Contract Type",
+            ["Month-to-month", "One year", "Two year"]
+        )
+
+        payment = st.selectbox(
+            "Payment Method",
+            [
+                "Electronic check",
+                "Mailed check",
+                "Bank transfer (automatic)",
+                "Credit card (automatic)"
+            ]
+        )
 
     monthly_charges = st.slider(
         "Monthly Charges",
@@ -149,10 +241,14 @@ with col3:
         75.0
     )
 
-    total_charges = st.number_input(
-        "Total Charges",
-        min_value=0.0,
-        value=900.0
+    total_charges = round(
+        monthly_charges * tenure,
+        2
+    )
+
+    st.metric(
+        "💰 Calculated Total Charges",
+        f"₹{total_charges:,.2f}"
     )
 
 
@@ -288,15 +384,23 @@ if st.button(
 
             else:
 
-                st.error(
-                    f"❌ API Error: {response.status_code}"
+                st.warning(
+                    """
+                    ⚠️ Unable to generate prediction.
+
+                    Please review the entered customer information.
+                    """
                 )
 
-                st.write(response.text)
+        except Exception:
 
-        except Exception as e:
+            st.error(
+                """
+                🚨 Service temporarily unavailable.
 
-            st.error(f"REAL ERROR: {e}")
+                Please try again in a few moments.
+                """
+            )
 
 
     
