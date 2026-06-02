@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import plotly.graph_objects as go
 
 
 st.set_page_config(
@@ -298,8 +299,47 @@ if st.button(
                 result = response.json()
 
                 prediction = result["Prediction"]
-                confidence = result["Confidence"]
+                confidence = float(result["Confidence"])
                 risk = result["RiskLevel"]
+
+                risk_factors = []
+                positive_factors = []
+
+
+                if contract == "Month-to-month":
+                    risk_factors.append("Month-to-Month Contract")
+
+                if payment == "Electronic check":
+                    risk_factors.append("Electronic Check Payment")
+
+                if tenure < 12:
+                    risk_factors.append("Short Customer Tenure")
+
+                if monthly_charges > 70:
+                    risk_factors.append("High Monthly Charges")
+
+                if tech_support == "No":
+                    risk_factors.append("No Tech Support")
+
+                if online_security == "No":
+                    risk_factors.append("No Online Security")
+
+
+                if contract in ["One year", "Two year"]:
+                    positive_factors.append("Long-Term Contract")
+
+                if tenure > 24:
+                    positive_factors.append("Long Customer Relationship")
+
+                if tech_support == "Yes":
+                    positive_factors.append("Tech Support Enabled")
+
+                if online_security == "Yes":
+                    positive_factors.append("Online Security Enabled")
+
+                if monthly_charges < 70:
+                    positive_factors.append("Affordable Monthly Charges")
+
 
 
                 st.markdown("---")
@@ -321,8 +361,8 @@ if st.button(
 
                 with metric1:
                     st.metric(
-                        "🎯 Confidence",
-                        f"{confidence}%"
+                        "📊 Churn Score",
+                        f"{confidence:.1f}%"
                     )
 
                 with metric2:
@@ -340,7 +380,52 @@ if st.button(
 
                 st.subheader("📊 Churn Probability")
 
-                st.progress(min(int(confidence), 100))
+                gauge = go.Figure(
+                    go.Indicator(
+                        mode="gauge+number",
+                        value=confidence,
+                        title={
+                            "text": "Churn Risk Score"
+                        },
+                        gauge={
+                            "axis": {
+                                "range": [0, 100]
+                            },
+                            "bar": {
+                                "color": "#1f77b4"
+                            },
+                            "steps": [
+                                {
+                                    "range": [0, 40],
+                                    "color": "green"
+                                },
+                                {
+                                    "range": [40, 70],
+                                    "color": "orange"
+                                },
+                                {
+                                    "range": [70, 100],
+                                    "color": "red"
+                                }
+                            ]
+                        }
+                    )
+                )
+
+                gauge.update_layout(
+                    height=250,
+                    margin=dict(
+                        l=20,
+                        r=20,
+                        t=50,
+                        b=20
+                    )
+                )
+
+                st.plotly_chart(
+                    gauge,
+                    use_container_width=True
+                )                
 
 
                 st.subheader("🧠 AI Risk Analysis")
@@ -375,6 +460,36 @@ if st.button(
                         Customer appears loyal and stable ✅
                         """
                     )
+
+                if prediction == "Customer Will Churn":
+
+                    st.subheader("⚠️ Risk Factors")
+
+                    if risk_factors:
+
+                        for factor in risk_factors:
+                            st.warning(f"⚠️ {factor}")
+
+                    else:
+
+                        st.info(
+                            "Model identified churn risk, but no major business-rule risk factors were detected."
+                        )
+
+                else:
+
+                    st.subheader("✅ Positive Factors")
+
+                    if positive_factors:
+
+                        for factor in positive_factors:
+                            st.success(f"✅ {factor}")
+
+                    else:
+
+                        st.info(
+                            "Customer shows stable behavior patterns."
+                        )
 
 
                 if show_json:
