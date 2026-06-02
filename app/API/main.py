@@ -31,21 +31,21 @@ def Predict_Customer_Churn(data:CustomerFeatures):
         probability = predict_probability(input_info)
         result = probability[0][1]
 
-        # Prediction logic
-        if result >= 0.30:
-            output = "Customer Will Churn"
-        else:
-            output = "Customer Will Stay"
+        if result >= 0.70:
 
-        # Risk Level Logic
-        if result >= 0.80:
+            output = "Customer Will Churn"
             risk = "High Risk"
 
-        elif result >= 0.50:
+        elif result >= 0.40:
+
+            output = "Customer Will Churn"
             risk = "Medium Risk"
 
         else:
+
+            output = "Customer Will Stay"
             risk = "Low Risk"
+
         return {
             "Prediction": output,
             "Confidence": round(result * 100, 2),
