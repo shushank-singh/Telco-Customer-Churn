@@ -1,6 +1,9 @@
 import streamlit as st
 import requests
 import plotly.graph_objects as go
+from supabase_utils.database import (
+    save_prediction
+)
 
 
 st.set_page_config(
@@ -24,6 +27,14 @@ with st.sidebar:
     st.success(
         f"👤 {st.session_state.get('user_email')}"
     )
+
+    if st.button(
+        "📜 Prediction History"
+    ):
+
+        st.switch_page(
+            "pages/history.py"
+        )
 
     if st.button("Logout"):
 
@@ -325,6 +336,17 @@ if st.button(
                 prediction = result["Prediction"]
                 confidence = float(result["Confidence"])
                 risk = result["RiskLevel"]
+
+                save_prediction(
+
+                    user_id=st.session_state["user_id"],
+
+                    customer_data=payload,
+
+                    prediction=prediction,
+
+                    confidence=confidence
+                )
 
                 risk_factors = []
                 positive_factors = []

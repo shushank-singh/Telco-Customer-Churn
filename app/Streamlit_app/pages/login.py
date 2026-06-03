@@ -51,6 +51,8 @@ if st.button("Login"):
                 "user_email"
             ] = response.user.email
 
+            st.session_state["user_id"] = response.user.id
+
             st.switch_page(
                 "pages/dashboard.py"
             )
