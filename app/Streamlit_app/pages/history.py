@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 import streamlit as st
+import pandas as pd
 from supabase_utils.database import (
     get_user_predictions
 )
@@ -43,12 +44,85 @@ if not data:
         "No prediction history found."
     )
 
-else:
+    st.stop()
 
-    st.dataframe(
-        data,
-        use_container_width=True
+df = pd.DataFrame(data)
+
+total_predictions = len(df)
+
+churn_predictions = len(
+    df[
+        df["prediction"]
+        ==
+        "Customer Will Churn"
+    ]
+)
+
+safe_predictions = (
+    total_predictions
+    -
+    churn_predictions
+)
+
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+
+    st.metric(
+        "📊 Total Predictions",
+        total_predictions
     )
+
+with col2:
+
+    st.metric(
+        "⚠️ Churn Predictions",
+        churn_predictions
+    )
+
+with col3:
+
+    st.metric(
+        "✅ Safe Predictions",
+        safe_predictions
+    )
+
+st.markdown("---")
+
+display_df = df[
+    [
+        "prediction",
+        "confidence",
+        "created_at"
+    ]
+].copy()
+
+display_df.columns = [
+    "Prediction",
+    "Confidence (%)",
+    "Created At"
+]
+
+st.dataframe(
+    display_df,
+    use_container_width=True
+)
+
+csv = display_df.to_csv(
+    index=False
+)
+
+st.download_button(
+
+    label="📥 Download History CSV",
+
+    data=csv,
+
+    file_name="prediction_history.csv",
+
+    mime="text/csv"
+)
 
 if st.button(
     "⬅️ Back to Dashboard"
